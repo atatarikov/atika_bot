@@ -9,5 +9,5 @@ async def echo_send(message: types.Message):
     await bot.send_message(message.from_user.id, "сендМес " + message.text)
     await message.answer("ансв " + message.text)
 
-def reg_hendlers_other(dp : Dispatcher):
-    dp.register_message_handler(echo_send )
+def reg_hendlers_other(dp: Dispatcher):
+    dp.register_message_handler(echo_send)
