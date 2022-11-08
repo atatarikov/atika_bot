@@ -3,6 +3,8 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram import types, Dispatcher
 from create_bot import dp, bot
 from aiogram.dispatcher.filters import Text
+from data_base import sqlite_db
+from keyboards import admin_kb
 
 
 ID = None
@@ -16,7 +18,7 @@ class FSMAdmon(StatesGroup):
 async def make_changes_command(message: types.Message):
     global ID
     ID = message.from_user.id
-    await bot.send_message(message.from_user.id, 'Что хозяин надо???')
+    await bot.send_message(message.from_user.id, 'Что хозяин надо???', reply_markup=admin_kb.button_case_admin)
     await message.delete()
 
 # Начало диалога загрузки нового пункта меню
@@ -38,7 +40,7 @@ async def load_photo(massage: types.Message, state: FSMContext):
 # Ловим второй ответ
 # @dp.message_handler(state=FSMAdmon.name)
 async def load_name(massage: types.Message, state: FSMContext):
-    if massage.from_user.id == ID:    
+    if massage.from_user.id == ID:
         async with state.proxy() as data:
             data['name'] = massage.text
         await FSMAdmon.next()
@@ -60,9 +62,9 @@ async def load_price(massage: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data['price'] = float(massage.text)
 
-        async with state.proxy() as data: 
-            await massage.reply(str(data))
-
+        # async with state.proxy() as data:
+        #     await massage.reply(str(data))
+        await sqlite_db.sql_add_command(state)
         await state.finish()
 
 # Выход из состояний
